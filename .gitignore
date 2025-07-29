@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+build/
+out/
+classes/
+
+# Eclipse
+.project
+.classpath
+.settings/
+bin/
+*.launch
+.metadata
+
+# IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Visual Studio Code
+.vscode/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Minecraft Development
+run/
+runs/
+run-data/
+eclipse/
+logs/
+*.log
+
+# Build outputs
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Runtime
+crash-reports/
+repo/

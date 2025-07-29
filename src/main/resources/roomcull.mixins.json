@@ -1,0 +1,17 @@
+{
+  "required": true,
+  "package": "com.harrisfauntleroy.roomcull.mixins",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "roomcull.refmap.json",
+  "mixins": [
+  ],
+  "client": [
+    "ChunkRenderDispatcherMixin",
+    "FrustumMixin",
+    "LevelRendererChunkMixin",
+    "LevelRendererMixin"
+  ],
+  "server": [
+  ],
+  "minVersion": "0.8"
+}

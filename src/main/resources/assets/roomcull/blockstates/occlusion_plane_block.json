@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "examplemod:block/occlusion_plane_block"
+    },
+    "facing=south": {
+      "model": "examplemod:block/occlusion_plane_block",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "examplemod:block/occlusion_plane_block",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "examplemod:block/occlusion_plane_block",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "examplemod:block/occlusion_plane_block",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "examplemod:block/occlusion_plane_block",
+      "x": 90
+    }
+  }
+}

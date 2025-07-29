@@ -1,92 +1,125 @@
-# LEAP Mod (Leveling Enhancement And Progression)
+# RoomCull
 
-## Overview
+<div align="center">
+    <h3>Room-based occlusion culling for Minecraft 1.21.1</h3>
+</div>
 
-LEAP is an in-development Minecraft mod that enhances the game's progression system by introducing a custom leveling and experience system. This mod aims to provide players with a more engaging and rewarding gameplay experience.
+<p align="center">
+    <a href="https://github.com/harrisfauntleroy/roomcull/releases">
+        <img alt="Latest Release" src="https://img.shields.io/github/v/release/harrisfauntleroy/roomcull">
+    </a>
+    <a href="https://github.com/harrisfauntleroy/roomcull/issues">
+        <img alt="Issues" src="https://img.shields.io/github/issues/harrisfauntleroy/roomcull">
+    </a>
+    <a href="https://github.com/harrisfauntleroy/roomcull/commits">
+        <img alt="Last Commit" src="https://img.shields.io/github/last-commit/harrisfauntleroy/roomcull">
+    </a>
+    <a href="/LICENSE">
+        <img alt="License: MIT" src="https://img.shields.io/github/license/harrisfauntleroy/roomcull">
+    </a>
+    <a href="https://github.com/harrisfauntleroy/roomcull/graphs/contributors">
+        <img alt="Contributors" src="https://img.shields.io/github/contributors-anon/harrisfauntleroy/roomcull">
+    </a>
+</p>
 
-## Features
+RoomCull is a performance optimization mod for Minecraft 1.21.1 that implements intelligent room-based occlusion culling. By detecting room boundaries and creating frustum planes at walls, floors, and ceilings, RoomCull dramatically improves rendering performance by hiding geometry that shouldn't be visible from the player's current position within enclosed spaces.
 
-- Custom XP system separate from vanilla Minecraft
-- Unique leveling progression
-- HUD display for LEAP XP and levels
+Perfect for large builds, underground bases, and complex interior structures where traditional frustum culling isn't enough to maintain smooth framerates.
 
-## Version Branches
+## ✨ Key Features
 
-Each major Minecraft version has its own branch in this repository. This allows for easier maintenance and ensures compatibility with specific Minecraft versions.
+- **Automatic Room Detection** - Scans in all directions to detect walls, floors, and ceilings
+- **6-Plane Frustum Culling** - Creates proper frustum planes at room boundaries 
+- **Real-time Boundary Updates** - Periodically rescans for changes in room structure
+- **Visual Debug Particles** - Red redstone particle beams show detected room boundaries
+- **Glowstone Room Block** - Place to define room centers and enable occlusion culling
+- **Performance Optimized** - Minimal overhead with intelligent caching and cleanup
 
-- `1.21` branch: For Minecraft 1.21.x
-- `1.20` branch: For Minecraft 1.20.x
-- `1.19` branch: For Minecraft 1.19.x
+## 🎮 How It Works
 
-Always ensure you're using the correct branch for your target Minecraft version when contributing or building the mod.
+1. **Place Room Blocks** - Place the glowing room block at the center of enclosed spaces
+2. **Automatic Detection** - The mod scans up to 50 blocks in each direction to find walls
+3. **Frustum Creation** - Creates 6 culling planes at the detected room boundaries
+4. **Selective Rendering** - Only renders geometry inside the room when you're inside it
+5. **Visual Feedback** - See red particle beams showing the detected room boundaries
 
-## Installation
+## 🚀 Installation
 
 ### For Players
 
-1. Download the latest release for your Minecraft version from the [Releases](https://github.com/yourusername/leap-mod/releases) page.
-2. Place the downloaded `.jar` file in your Minecraft `mods` folder.
-3. Launch Minecraft with the NeoForge mod loader.
+1. Download the latest release for Minecraft 1.21.1 from the [Releases](https://github.com/harrisfauntleroy/roomcull/releases) page
+2. Install [NeoForge](https://neoforged.net/) for Minecraft 1.21.1
+3. Place the downloaded `.jar` file in your Minecraft `mods` folder
+4. Launch Minecraft with NeoForge
 
 ### For Developers
 
-This repository can be directly cloned to get you started with development. Follow these steps:
-
 1. Clone this repository:
+   ```bash
+   git clone https://github.com/harrisfauntleroy/roomcull.git
    ```
-   git clone https://github.com/yourusername/leap-mod.git
+2. Open in your preferred IDE (IntelliJ IDEA recommended)
+3. Generate run configurations:
+   ```bash
+   ./gradlew genIntellijRuns
    ```
-2. Open the repository in your preferred IDE (IntelliJ IDEA or Eclipse recommended).
-3. Run `gradlew genEclipseRuns` (for Eclipse) or `gradlew genIntellijRuns` (for IntelliJ IDEA) to generate run configurations.
 
-If you encounter missing libraries or other issues, run:
-```
-gradlew --refresh-dependencies
-```
-To reset everything (this does not affect your code), run:
-```
-gradlew clean
-```
+## 🛠️ Building and Running
 
-## Building and Running
-
-To build the jar file:
+### Build the mod:
 ```bash
-gradlew build
+./gradlew build
 ```
 
-To run the client:
+### Run the client for testing:
 ```bash
-gradlew runClient
+./gradlew runClient
 ```
 
-To run the server (Server files will be in the `/run` directory):
+### Run the dedicated server:
 ```bash
-gradlew runServer
+./gradlew runServer
 ```
 
-To run both client and server:
+### Clean build artifacts:
 ```bash
-gradlew runClient runServer
+./gradlew clean
 ```
 
-## Mapping Names
+## 🎯 Usage
 
-By default, this mod uses the official mapping names from Mojang for methods and fields in the Minecraft codebase. These names are covered by a specific license. All modders should be aware of this license. For the latest license text, refer to the mapping file itself, or the reference copy here:
-https://github.com/NeoForged/NeoForm/blob/main/Mojang.md
+1. **Craft Room Blocks** - Find them in the Building Blocks creative tab
+2. **Place Strategically** - Put room blocks at the center of enclosed spaces
+3. **Watch Performance** - Enjoy improved framerates in complex interior builds
+4. **Debug Visualization** - Red particle beams show detected room boundaries every 2 seconds
 
-## Additional Resources
+## 🛠️ Tech Stack
 
-- [Community Documentation](https://docs.neoforged.net/)
-- [NeoForged Discord](https://discord.neoforged.net/)
+- **Minecraft**: 1.21.1
+- **Mod Loader**: NeoForge 21.0.167
+- **Language**: Java 21
+- **Build System**: Gradle with ModDev plugin
+- **Mixins**: For low-level rendering system integration
 
-## Contributing
+## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for more details on how to get started.
+Contributions are welcome! Whether you're reporting bugs, requesting features, or submitting code improvements:
 
-## License
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-This project is licensed under MIT. See the [LICENSE](LICENSE) file for details.
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🔗 Additional Resources
+
+- [NeoForge Documentation](https://docs.neoforged.net/)
+- [NeoForge Discord](https://discord.neoforged.net/)
+- [Minecraft Forge Modding](https://mcforge.readthedocs.io/)
 
 ---
 

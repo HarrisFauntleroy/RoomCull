@@ -97,18 +97,18 @@ public class RoomBlockEntity extends BlockEntity {
     
     /**
      * Update the occlusion bounding box based on detected room boundaries
-     * Add +1 block buffer so you can still see the walls
+     * Use precise wall positions with small inward offset to prevent outside culling
      */
     private void updateOcclusionBounds() {
         BlockPos center = getBlockPos();
         
-        // Room bounds with +1 buffer
-        double minX = center.getX() - westWall - 1;
-        double maxX = center.getX() + eastWall + 1;
-        double minY = center.getY() - downWall - 1;
-        double maxY = center.getY() + upWall + 1;
-        double minZ = center.getZ() - northWall - 1;
-        double maxZ = center.getZ() + southWall + 1;
+        // Room bounds with 0.1 block inward offset to keep culling inside walls
+        double minX = center.getX() - westWall + 0.1;
+        double maxX = center.getX() + eastWall - 0.1;
+        double minY = center.getY() - downWall + 0.1;
+        double maxY = center.getY() + upWall - 0.1;
+        double minZ = center.getZ() - northWall + 0.1;
+        double maxZ = center.getZ() + southWall - 0.1;
         
         occlusionBounds = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
         

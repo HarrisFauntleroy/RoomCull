@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "roomcull:block/room_block"
+    }
+  }
+}

@@ -9,7 +9,9 @@
     "ChunkRenderDispatcherMixin",
     "FrustumMixin",
     "LevelRendererChunkMixin",
-    "LevelRendererMixin"
+    "LevelRendererMixin",
+    "ParticleAccessor",
+    "ParticleEngineMixin"
   ],
   "server": [
   ],

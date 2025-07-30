@@ -48,14 +48,18 @@ jobs:
             cat release_changelog.md >> $GITHUB_OUTPUT
             echo "EOF" >> $GITHUB_OUTPUT
           else
-            echo "CHANGELOG_CONTENT=## What's New in v${{ steps.get_version.outputs.VERSION }}
-
-        See commit history for details." >> $GITHUB_OUTPUT
+            echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_OUTPUT
+            echo "## What's New in v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+            echo "" >> $GITHUB_OUTPUT
+            echo "See commit history for details." >> $GITHUB_OUTPUT
+            echo "EOF" >> $GITHUB_OUTPUT
           fi
         else
-          echo "CHANGELOG_CONTENT=## What's New in v${{ steps.get_version.outputs.VERSION }}
-
-        See commit history for details." >> $GITHUB_OUTPUT
+          echo "CHANGELOG_CONTENT<<EOF" >> $GITHUB_OUTPUT
+          echo "## What's New in v${{ steps.get_version.outputs.VERSION }}" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
+          echo "See commit history for details." >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
         fi
 
     - name: Create Release

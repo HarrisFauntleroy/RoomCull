@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE suppressions PUBLIC
+    "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN"
+    "https://checkstyle.org/dtds/suppressions_1_2.dtd">
+
+<suppressions>
+    <!-- Suppress ParameterNumber for Mixin methods that must match Minecraft method signatures -->
+    <suppress checks="ParameterNumber" files=".*Mixin\.java$"/>
+    
+    <!-- Suppress magic numbers in test files as they are test constants -->
+    <suppress checks="MagicNumber" files=".*Test\.java$"/>
+    
+    <!-- Suppress JavaDoc requirements for test files -->
+    <suppress checks="MissingJavadocMethod|JavadocMethod|JavadocType|JavadocVariable" files=".*Test\.java$"/>
+    
+    <!-- Suppress final parameters in test files for readability -->
+    <suppress checks="FinalParameters" files=".*Test\.java$"/>
+    
+    <!-- Suppress design for extension in test files -->
+    <suppress checks="DesignForExtension" files=".*Test\.java$"/>
+    
+    <!-- Suppress visibility modifier checks in test files -->
+    <suppress checks="VisibilityModifier" files=".*Test\.java$"/>
+    
+    <!-- Allow star imports in test files for cleaner test code -->
+    <suppress checks="AvoidStarImport" files=".*Test\.java$"/>
+    
+    <!-- Allow parameter number violations in test methods (parameterized tests) -->
+    <suppress checks="ParameterNumber" files=".*Test\.java$"/>
+    
+    <!-- Allow multiple variable declarations in test files for test setup -->
+    <suppress checks="MultipleVariableDeclarations" files=".*Test\.java$"/>
+</suppressions>

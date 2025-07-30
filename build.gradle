@@ -2,6 +2,11 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'net.neoforged.moddev' version '1.0.17'
+    id 'checkstyle'
+    id 'com.github.spotbugs' version '6.0.7'
+    id 'pmd'
+    id 'jacoco'
+    id 'com.diffplug.spotless' version '6.25.0'
 }
 
 tasks.named('wrapper', Wrapper).configure {
@@ -187,3 +192,121 @@ idea {
         downloadJavadoc = true
     }
 }
+
+// Testing dependencies
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.1'
+    testImplementation 'org.mockito:mockito-core:5.8.0'
+    testImplementation 'org.mockito:mockito-junit-jupiter:5.8.0'
+    testImplementation "net.neoforged:testframework:${neo_version}"
+    
+    spotbugs 'com.github.spotbugs:spotbugs:4.8.3'
+    spotbugsPlugins 'com.h3xstream.findsecbugs:findsecbugs-plugin:1.12.0'
+}
+
+// Testing configuration
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+    
+    // Configure test environment for NeoForge
+    systemProperty 'neoforge.testframework.enable', 'true'
+    systemProperty 'neoforge.testframework.gametest.enable', 'true'
+    
+    // Exclude tests that require full Minecraft environment from unit tests
+    exclude '**/RoomBlockTest.class'
+    exclude '**/RoomManagerTest.class'
+    exclude '**/ConfigTest.class'
+}
+
+// Checkstyle configuration
+checkstyle {
+    toolVersion = '10.12.4'
+    configFile = file('config/checkstyle/checkstyle.xml')
+    configDirectory = file('config/checkstyle')
+}
+
+// SpotBugs configuration
+spotbugs {
+    ignoreFailures = false
+    excludeFilter = file('config/spotbugs/exclude.xml')
+}
+
+spotbugsMain {
+    reports {
+        html {
+            required = true
+            outputLocation = file('build/reports/spotbugs/main/spotbugs.html')
+        }
+        xml {
+            required = false
+        }
+    }
+}
+
+// PMD configuration
+pmd {
+    toolVersion = '6.55.0'
+    ruleSetFiles = files('config/pmd/ruleset.xml')
+    ignoreFailures = false
+}
+
+// JaCoCo configuration
+jacocoTestReport {
+    reports {
+        xml.required = true
+        html.required = true
+    }
+}
+
+// Spotless configuration
+spotless {
+    java {
+        googleJavaFormat('1.19.2').aosp().reflowLongStrings()
+        removeUnusedImports()
+        trimTrailingWhitespace()
+        endWithNewline()
+        formatAnnotations()
+    }
+}
+
+// Code quality task
+task codeQuality {
+    dependsOn check, test, jacocoTestReport, spotlessCheck
+    description 'Runs all code quality checks'
+    group 'verification'
+}
+
+// Integration tests that require Minecraft environment
+task integrationTest(type: Test) {
+    useJUnitPlatform()
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    
+    // Only run integration tests
+    include '**/RoomBlockTest.class'
+    include '**/RoomManagerTest.class'
+    include '**/ConfigTest.class'
+    
+    // Configure for NeoForge test framework
+    systemProperty 'neoforge.testframework.enable', 'true'
+    systemProperty 'neoforge.testframework.gametest.enable', 'true'
+    
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
+// Format and check task
+task formatAndCheck {
+    dependsOn spotlessApply, codeQuality
+    description 'Formats code and runs all quality checks'
+    group 'verification'
+}
+

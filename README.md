@@ -86,6 +86,27 @@ Perfect for large builds, underground bases, and complex interior structures whe
 ./gradlew clean
 ```
 
+### Create a release:
+```bash
+# Create and push a version tag (e.g., v1.0.0)
+git tag v1.0.0
+git push origin v1.0.0
+```
+
+The GitHub Actions workflow will automatically:
+- Build the mod and create a GitHub release with the JAR file
+- Extract changelog from `CHANGELOG.md` for the tagged version
+- Publish to CurseForge (requires `CURSEFORGE_PROJECT_ID` and `CURSEFORGE_API_TOKEN` secrets)  
+- Publish to Modrinth (requires `MODRINTH_PROJECT_ID` and `MODRINTH_API_TOKEN` secrets)
+
+#### Setting up publishing secrets:
+1. Go to your repository's Settings → Secrets and variables → Actions
+2. Add the following repository secrets:
+   - `CURSEFORGE_PROJECT_ID`: Your CurseForge project ID
+   - `CURSEFORGE_API_TOKEN`: Your CurseForge API token
+   - `MODRINTH_PROJECT_ID`: Your Modrinth project ID (slug)
+   - `MODRINTH_API_TOKEN`: Your Modrinth API token
+
 ## 🎯 Usage
 
 1. **Craft Room Blocks** - Find them in the Building Blocks creative tab

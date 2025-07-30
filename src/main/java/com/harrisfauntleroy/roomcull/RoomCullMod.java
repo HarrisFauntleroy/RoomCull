@@ -1,23 +1,15 @@
 package com.harrisfauntleroy.roomcull;
 
-import org.slf4j.Logger;
-
 import com.mojang.logging.LogUtils;
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.material.MapColor;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -26,7 +18,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
@@ -35,57 +26,100 @@ import net.neoforged.neoforge.registries.DeferredBlock;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import org.slf4j.Logger;
 
+/**
+ * Main mod class for the Room Culling mod.
+ *
+ * <p>This mod implements room-based occlusion culling to improve performance in indoor
+ * environments. When a player is inside a room (defined by placing a Room Block), objects outside
+ * that room are automatically culled from rendering, reducing the visual complexity and improving
+ * frame rates.
+ *
+ * <p>The mod adds:
+ *
+ * <ul>
+ *   <li>{@link RoomBlock} - A functional block that detects room boundaries
+ *   <li>{@link RoomBlockEntity} - Handles room scanning and boundary detection
+ *   <li>{@link RoomManager} - Manages occlusion culling across all rooms
+ *   <li>Mixin-based integration with Minecraft's rendering system
+ * </ul>
+ *
+ * @author Harris Fauntleroy
+ * @since 1.0.0
+ */
 // The value here should match an entry in the META-INF/neoforge.mods.toml file
 @Mod(RoomCullMod.MODID)
-public class RoomCullMod
-{
-    // Define mod id in a common place for everything to reference
+public class RoomCullMod {
+    /** The unique identifier for this mod. */
     public static final String MODID = "roomcull";
-    // Directly reference a slf4j logger
+
+    /** Logger instance for this mod. */
     private static final Logger LOGGER = LogUtils.getLogger();
-    // Create a Deferred Register to hold Blocks which will all be registered under the "examplemod" namespace
+
+    /** Registry for blocks added by this mod. */
     public static final DeferredRegister.Blocks BLOCKS = DeferredRegister.createBlocks(MODID);
-    // Create a Deferred Register to hold Items which will all be registered under the "examplemod" namespace
+
+    /** Registry for items added by this mod. */
     public static final DeferredRegister.Items ITEMS = DeferredRegister.createItems(MODID);
-    // Create a Deferred Register to hold CreativeModeTabs which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS = DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
-    // Create a Deferred Register to hold BlockEntityTypes which will all be registered under the "examplemod" namespace
-    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
 
-    // Creates a new Block with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredBlock<Block> EXAMPLE_BLOCK = BLOCKS.registerSimpleBlock("example_block", BlockBehaviour.Properties.of().mapColor(MapColor.STONE));
-    // Creates a new BlockItem with the id "examplemod:example_block", combining the namespace and path
-    public static final DeferredItem<BlockItem> EXAMPLE_BLOCK_ITEM = ITEMS.registerSimpleBlockItem("example_block", EXAMPLE_BLOCK);
+    /** Registry for creative mode tabs added by this mod. */
+    public static final DeferredRegister<CreativeModeTab> CREATIVE_MODE_TABS =
+            DeferredRegister.create(Registries.CREATIVE_MODE_TAB, MODID);
 
+    /** Registry for block entity types added by this mod. */
+    public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES =
+            DeferredRegister.create(Registries.BLOCK_ENTITY_TYPE, MODID);
 
-    // Creates the room block (detects room boundaries and occludes outside)
-    public static final DeferredBlock<Block> ROOM_BLOCK = BLOCKS.register("room_block", RoomBlock::new);
-    // Creates the room block item
-    public static final DeferredItem<BlockItem> ROOM_BLOCK_ITEM = ITEMS.register("room_block", () -> new BlockItem(ROOM_BLOCK.get(), new Item.Properties()));
+    /** The room block that detects boundaries and enables occlusion culling. */
+    public static final DeferredBlock<Block> ROOM_BLOCK =
+            BLOCKS.register("room_block", RoomBlock::new);
 
-    // Register the room block entity type
-    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RoomBlockEntity>> ROOM_BLOCK_ENTITY = 
-        BLOCK_ENTITY_TYPES.register("room_block_entity", () -> 
-            BlockEntityType.Builder.of(RoomBlockEntity::new, ROOM_BLOCK.get()).build(null));
+    /** Item form of the room block for placement. */
+    public static final DeferredItem<BlockItem> ROOM_BLOCK_ITEM =
+            ITEMS.register(
+                    "room_block", () -> new BlockItem(ROOM_BLOCK.get(), new Item.Properties()));
 
-    // Creates a new food item with the id "examplemod:example_id", nutrition 1 and saturation 2
-    public static final DeferredItem<Item> EXAMPLE_ITEM = ITEMS.registerSimpleItem("example_item", new Item.Properties().food(new FoodProperties.Builder()
-            .alwaysEdible().nutrition(1).saturationModifier(2f).build()));
+    /** Block entity type for room blocks that handles boundary detection. */
+    public static final DeferredHolder<BlockEntityType<?>, BlockEntityType<RoomBlockEntity>>
+            ROOM_BLOCK_ENTITY =
+                    BLOCK_ENTITY_TYPES.register(
+                            "room_block_entity",
+                            () ->
+                                    BlockEntityType.Builder.of(
+                                                    RoomBlockEntity::new, ROOM_BLOCK.get())
+                                            .build(null));
 
-    // Creates a creative tab with the id "examplemod:example_tab" for the example item, that is placed after the combat tab
-    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> EXAMPLE_TAB = CREATIVE_MODE_TABS.register("example_tab", () -> CreativeModeTab.builder()
-            .title(Component.translatable("itemGroup.roomcull")) //The language key for the title of your CreativeModeTab
-            .withTabsBefore(CreativeModeTabs.COMBAT)
-            .icon(() -> EXAMPLE_ITEM.get().getDefaultInstance())
-            .displayItems((parameters, output) -> {
-                output.accept(EXAMPLE_ITEM.get()); // Add the example item to the tab. For your own tabs, this method is preferred over the event
-            }).build());
+    /** Creative tab for room culling items. */
+    public static final DeferredHolder<CreativeModeTab, CreativeModeTab> ROOM_CULL_TAB =
+            CREATIVE_MODE_TABS.register(
+                    "room_cull_tab",
+                    () ->
+                            CreativeModeTab.builder()
+                                    .title(Component.translatable("itemGroup.roomcull"))
+                                    .withTabsBefore(CreativeModeTabs.REDSTONE_BLOCKS)
+                                    .icon(() -> ROOM_BLOCK_ITEM.get().getDefaultInstance())
+                                    .displayItems(
+                                            (parameters, output) -> {
+                                                output.accept(ROOM_BLOCK_ITEM.get());
+                                            })
+                                    .build());
 
-    // The constructor for the mod class is the first code that is run when your mod is loaded.
-    // FML will recognize some parameter types like IEventBus or ModContainer and pass them in automatically.
-    public RoomCullMod(IEventBus modEventBus, ModContainer modContainer)
-    {
+    /**
+     * Main constructor for the Room Culling mod.
+     *
+     * <p>This constructor is called by NeoForge during mod loading and handles:
+     *
+     * <ul>
+     *   <li>Registering deferred registries for blocks, items, and block entities
+     *   <li>Setting up event listeners for mod lifecycle events
+     *   <li>Configuring mod configuration
+     * </ul>
+     *
+     * @param modEventBus the mod-specific event bus for registration events
+     * @param modContainer the container holding this mod's metadata
+     */
+    public RoomCullMod(final IEventBus modEventBus, final ModContainer modContainer) {
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
 
@@ -99,8 +133,10 @@ public class RoomCullMod
         BLOCK_ENTITY_TYPES.register(modEventBus);
 
         // Register ourselves for server and other game events we are interested in.
-        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond directly to events.
-        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class, like onServerStarting() below.
+        // Note that this is necessary if and only if we want *this* class (ExampleMod) to respond
+        // directly to events.
+        // Do not add this line if there are no @SubscribeEvent-annotated functions in this class,
+        // like onServerStarting() below.
         NeoForge.EVENT_BUS.register(this);
 
         // Register the item to a creative tab
@@ -110,51 +146,49 @@ public class RoomCullMod
         modContainer.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
-    private void commonSetup(final FMLCommonSetupEvent event)
-    {
-        // Some common setup code
-        LOGGER.info("HELLO FROM COMMON SETUP");
-
-        if (Config.logDirtBlock)
-            LOGGER.info("DIRT BLOCK >> {}", BuiltInRegistries.BLOCK.getKey(Blocks.DIRT));
-
-        LOGGER.info(Config.magicNumberIntroduction + Config.magicNumber);
-
-        Config.items.forEach((item) -> LOGGER.info("ITEM >> {}", item.toString()));
+    private void commonSetup(final FMLCommonSetupEvent event) {
+        // Room culling setup
+        LOGGER.info("Room Culling mod initialized");
     }
 
-    // Add the example block item to the building blocks tab
-    private void addCreative(BuildCreativeModeTabContentsEvent event)
-    {
-        if (event.getTabKey() == CreativeModeTabs.BUILDING_BLOCKS) {
-            event.accept(EXAMPLE_BLOCK_ITEM);
+    // Add the room block to the redstone blocks tab
+    private void addCreative(final BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.REDSTONE_BLOCKS) {
             event.accept(ROOM_BLOCK_ITEM);
         }
     }
 
-    // You can use SubscribeEvent and let the Event Bus discover methods to call
+    /**
+     * Called when the server is starting up.
+     *
+     * @param event the server starting event
+     */
     @SubscribeEvent
-    public void onServerStarting(ServerStartingEvent event)
-    {
-        // Do something when the server starts
-        LOGGER.info("HELLO from server starting");
+    public void onServerStarting(final ServerStartingEvent event) {
+        // Room culling server startup
+        LOGGER.info("Room Culling server started");
     }
 
-    // You can use EventBusSubscriber to automatically register all static methods in the class annotated with @SubscribeEvent
+    // You can use EventBusSubscriber to automatically register all static methods in the class
+    // annotated with @SubscribeEvent
     @EventBusSubscriber(modid = MODID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
-    public static class ClientModEvents
-    {
+    public static class ClientModEvents {
+        /**
+         * Called when the client is being set up.
+         *
+         * @param event the client setup event
+         */
         @SubscribeEvent
-        public static void onClientSetup(FMLClientSetupEvent event)
-        {
-            // Some client setup code
-            LOGGER.info("HELLO FROM CLIENT SETUP");
-            LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
-            
+        public static void onClientSetup(final FMLClientSetupEvent event) {
+            // Room culling client setup
+            LOGGER.info("Room Culling client initialized");
+
             // Register the room block entity renderer
-            event.enqueueWork(() -> {
-                BlockEntityRenderers.register(ROOM_BLOCK_ENTITY.get(), RoomBlockEntityRenderer::new);
-            });
+            event.enqueueWork(
+                    () -> {
+                        BlockEntityRenderers.register(
+                                ROOM_BLOCK_ENTITY.get(), RoomBlockEntityRenderer::new);
+                    });
         }
     }
 }

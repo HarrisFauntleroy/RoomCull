@@ -6,10 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "ChunkRenderDispatcherMixin",
     "FrustumMixin",
     "LevelRendererChunkMixin",
-    "LevelRendererMixin",
     "ParticleAccessor",
     "ParticleEngineMixin"
   ],

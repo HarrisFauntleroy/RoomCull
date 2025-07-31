@@ -8,7 +8,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
 /**
  * Configuration class for the RoomCull mod.
  *
- * <p>Configuration class providing debug logging options for the RoomCull mod. Currently provides
+ * <p>Configuration class providing debug logging options for the RoomCull mod. Currently, provides
  * debug mode configuration and can be extended in the future for additional room culling settings
  * such as:
  *

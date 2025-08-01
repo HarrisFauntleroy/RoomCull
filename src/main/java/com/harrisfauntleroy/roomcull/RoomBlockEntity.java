@@ -172,14 +172,49 @@ public class RoomBlockEntity extends BlockEntity {
             pos.move(direction);
             BlockState blockState = level.getBlockState(pos);
 
-            // If we hit a solid block (not air, not transparent), this is our wall
-            if (!blockState.isAir() && blockState.isSolidRender(level, pos)) {
+            // If we hit a solid block that can act as a wall, this is our boundary
+            if (!blockState.isAir() && isValidWallBlock(blockState, pos)) {
                 return i;
             }
         }
 
         // If we didn't find a wall within max distance, use max distance
         return maxDistance;
+    }
+
+    /**
+     * Determines if a block can act as a valid wall for room boundary detection.
+     *
+     * <p>A block is considered a valid wall if it:
+     *
+     * <ul>
+     *   <li>Has collision (blocks player movement)
+     *   <li>Is solid render (opaque blocks) OR transparent but solid (glass, etc.)
+     *   <li>Is not a liquid or replaceable block
+     * </ul>
+     *
+     * @param blockState the block state to check
+     * @param pos the position of the block
+     * @return true if the block can serve as a room wall
+     */
+    private boolean isValidWallBlock(final BlockState blockState, final BlockPos pos) {
+        if (level == null) {
+            return false;
+        }
+
+        // Check if block has collision shape (blocks movement)
+        if (blockState.getCollisionShape(level, pos).isEmpty()) {
+            return false;
+        }
+
+        // Accept solid render blocks (stone, wood, etc.)
+        if (blockState.isSolidRender(level, pos)) {
+            return true;
+        }
+
+        // Accept transparent but solid blocks (glass, iron bars, etc.)
+        // These have collision but aren't solid render - exclude liquids and replaceable blocks
+        return blockState.getFluidState().isEmpty() && !blockState.canBeReplaced();
     }
 
     /**
@@ -206,27 +241,29 @@ public class RoomBlockEntity extends BlockEntity {
 
         occlusionBounds = new AABB(minX, minY, minZ, maxX, maxY, maxZ);
 
-        // Debug output
-        System.out.println(
-                "Room at "
-                        + center
-                        + " detected walls: N="
-                        + northWall
-                        + " S="
-                        + southWall
-                        + " E="
-                        + eastWall
-                        + " W="
-                        + westWall
-                        + " U="
-                        + upWall
-                        + " D="
-                        + downWall);
-        System.out.println(
-                "Room bounds: "
-                        + String.format(
-                                "X:[%.1f-%.1f] Y:[%.1f-%.1f] Z:[%.1f-%.1f]",
-                                minX, maxX, minY, maxY, minZ, maxZ));
+        // Debug output only when debug mode is enabled
+        if (Config.isDebugMode()) {
+            System.out.println(
+                    "Room at "
+                            + center
+                            + " detected walls: N="
+                            + northWall
+                            + " S="
+                            + southWall
+                            + " E="
+                            + eastWall
+                            + " W="
+                            + westWall
+                            + " U="
+                            + upWall
+                            + " D="
+                            + downWall);
+            System.out.println(
+                    "Room bounds: "
+                            + String.format(
+                                    "X:[%.1f-%.1f] Y:[%.1f-%.1f] Z:[%.1f-%.1f]",
+                                    minX, maxX, minY, maxY, minZ, maxZ));
+        }
     }
 
     /**

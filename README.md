@@ -41,8 +41,6 @@ cd roomcull
 
 - **Automatic Room Detection** - Scans walls, floors, ceilings in real-time
 - **6-Plane Frustum Culling** - Creates frustum planes at room boundaries
-- **Visual Debug Mode** - Red particle beams show detected boundaries
-- **Performance Optimized** - Minimal overhead with intelligent caching
 
 ## Technical Implementation
 

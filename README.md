@@ -2,9 +2,9 @@
 
 Room-based occlusion culling for Minecraft 1.21.1
 
-[![Release](https://img.shields.io/github/v/release/harrisfauntleroy/roomcull)](https://github.com/harrisfauntleroy/roomcull/releases)
-[![Issues](https://img.shields.io/github/issues/harrisfauntleroy/roomcull)](https://github.com/harrisfauntleroy/roomcull/issues)
-[![License](https://img.shields.io/github/license/harrisfauntleroy/roomcull)](LICENSE)
+[![Release](https://img.shields.io/github/v/release/harrisfauntleroy/RoomCull)](https://github.com/harrisfauntleroy/RoomCull/releases)
+[![Issues](https://img.shields.io/github/issues/harrisfauntleroy/RoomCull)](https://github.com/harrisfauntleroy/RoomCull/issues)
+[![License](https://img.shields.io/github/license/harrisfauntleroy/RoomCull)](LICENSE)
 
 Performance optimization mod that implements intelligent room-based occlusion culling. Detects room boundaries and creates frustum planes to hide non-visible geometry in enclosed spaces.
 

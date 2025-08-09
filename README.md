@@ -11,6 +11,7 @@ Performance optimization mod that implements intelligent room-based occlusion cu
 ## Getting Started
 
 ### Prerequisites
+
 - Java 21
 - Minecraft 1.21.1
 - NeoForge 21.0.167
@@ -51,6 +52,7 @@ cd roomcull
 - **Build**: Gradle with ModDev plugin
 
 Room detection algorithm:
+
 1. Raycast in 6 directions from player position
 2. Identify solid block boundaries
 3. Generate frustum planes at detected boundaries
@@ -59,12 +61,14 @@ Room detection algorithm:
 ## Publishing
 
 Create release with version tag:
+
 ```bash
 git tag v1.0.0
 git push origin v1.0.0
 ```
 
 GitHub Actions automatically builds and publishes to:
+
 - GitHub Releases
 - CurseForge (requires `CURSEFORGE_PROJECT_ID`, `CURSEFORGE_API_TOKEN`)
 - Modrinth (requires `MODRINTH_PROJECT_ID`, `MODRINTH_API_TOKEN`)
@@ -85,7 +89,7 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
-For NeoForge documentation: https://docs.neoforged.net/
+For NeoForge documentation: <https://docs.neoforged.net/>
 
 ---
 
